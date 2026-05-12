@@ -1,0 +1,6 @@
+node_modules/
+out/
+package-lock.json
+*.tsbuildinfo
+.DS_Store
+.idea/
