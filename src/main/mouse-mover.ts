@@ -11,15 +11,18 @@ export class MouseMover {
   start(config: MoverConfig): void {
     this.stop()
     this.timer = setInterval(() => {
-      const pos = robot.getMousePos()
-      const angle = Math.random() * 2 * Math.PI
-      const dx = Math.round(Math.cos(angle) * config.moveAmount)
-      const dy = Math.round(Math.sin(angle) * config.moveAmount)
-      robot.moveMouse(pos.x + dx, pos.y + dy)
-      // Return to original position after a short delay
-      setTimeout(() => {
-        robot.moveMouse(pos.x, pos.y)
-      }, 300)
+      try {
+        const pos = robot.getMousePos()
+        const angle = Math.random() * 2 * Math.PI
+        const dx = Math.round(Math.cos(angle) * config.moveAmount)
+        const dy = Math.round(Math.sin(angle) * config.moveAmount)
+        robot.moveMouse(pos.x + dx, pos.y + dy)
+        setTimeout(() => {
+          robot.moveMouse(pos.x, pos.y)
+        }, 300)
+      } catch (err) {
+        console.error('[mouse-mover] robotjs error:', err)
+      }
     }, config.intervalMs)
   }
 

@@ -1,8 +1,24 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, systemPreferences, dialog } from 'electron'
 import { join } from 'path'
 import { MouseMover } from './mouse-mover'
 
 const mover = new MouseMover()
+
+function checkAccessibility(): void {
+  if (process.platform !== 'darwin') return
+  const trusted = systemPreferences.isTrustedAccessibilityClient(false)
+  if (!trusted) {
+    dialog.showMessageBoxSync({
+      type: 'warning',
+      title: 'Accessibility Permission Required',
+      message:
+        'Mouse Mover needs Accessibility access to move the cursor.\n\nGo to System Settings → Privacy & Security → Accessibility and add this app.',
+      buttons: ['Open System Settings', 'Later']
+    })
+    // Prompt the OS to open the Accessibility pane
+    systemPreferences.isTrustedAccessibilityClient(true)
+  }
+}
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -38,6 +54,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  checkAccessibility()
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
